@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 import 'package:jpsf_msc/components/action_on_coordinates/action_on_coordinates.dart';
-import 'package:jpsf_msc/screens/a_star_screen/a_star/a_star_controller.dart';
-import 'package:provider/provider.dart';
+import 'package:jpsf_msc/stores/a_star_store.dart';
+
+final aStarStore = Modular.get<AStarStore>();
 
 class AStarCtrls extends StatelessWidget {
   const AStarCtrls({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final ctrl = Provider.of<AStarController>(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -16,26 +18,55 @@ class AStarCtrls extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Player: ${ctrl.player.coordinates}'),
-              Text('Board: ${ctrl.fieldWidth} x ${ctrl.fieldHeight}'),
-              Text('Enemies: ${ctrl.enemies.length}'),
-              Text('Walls: ${ctrl.walls.length}'),
-              CheckboxListTile(
-                title: const Text("Wall Mode"),
-                value: ctrl.isWallMode,
-                onChanged: (newValue) {
-                  ctrl.setIsWallMode(newValue ?? false);
-                },
-                controlAffinity: ListTileControlAffinity.leading,
-              )
+              Observer(builder: (_) {
+                return Text('Player: ${aStarStore.player.coordinates}');
+              }),
+              Observer(builder: (_) {
+                return Text(
+                    'Board: ${aStarStore.fieldWidth} x ${aStarStore.fieldHeight}');
+              }),
+              Observer(builder: (_) {
+                return Text('Enemies: ${aStarStore.enemies.length}');
+              }),
+              Observer(builder: (_) {
+                return Text('Walls: ${aStarStore.walls.length}');
+              }),
+              Observer(builder: (_) {
+                return CheckboxListTile(
+                  title: const Text("Wall Mode"),
+                  value: aStarStore.isWallMode,
+                  onChanged: (newValue) {
+                    aStarStore.setIsWallMode(newValue ?? false);
+                  },
+                  controlAffinity: ListTileControlAffinity.leading,
+                );
+              })
             ],
           ),
         ),
+        Observer(builder: (_) {
+          return Expanded(
+            child: Column(
+              children: [
+                ...(aStarStore.enemies.keys).map(
+                  (key) => CheckboxListTile(
+                    title: Text("${aStarStore.enemies[key]?.coordinates}"),
+                    value: aStarStore.selectedEnemy == key,
+                    onChanged: (newValue) {
+                      aStarStore.setSelectedEnemy(key);
+                    },
+                    controlAffinity: ListTileControlAffinity.leading,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }),
         Expanded(
           child: ActionOnCoordinates(
             label: 'Add Enemy:',
             onPress: (coords) {
-              ctrl.spawnEnemyAt(coords);
+              aStarStore.spawnEnemyAt(coords);
             },
           ),
         ),

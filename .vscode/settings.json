@@ -1,0 +1,14 @@
+{
+    "dart.flutterSdkPath": "/Users/jeanpsf/fvm/default/bin",
+    "search.exclude": {
+        "**/.fvm": true
+    },
+    "files.watcherExclude": {
+        "**/.fvm": true
+    },
+    "eslint.codeActionsOnSave.rules": null,
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit",
+      "source.organizeImports": "explicit"
+    },
+}

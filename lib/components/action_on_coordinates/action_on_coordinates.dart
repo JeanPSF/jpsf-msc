@@ -19,15 +19,9 @@ class _ActionOnCoordinatesState extends State<ActionOnCoordinates> {
   final x = TextEditingController();
   final y = TextEditingController();
 
-  bool get isValid {
-    if (x.text.isNotEmpty && y.text.isNotEmpty) {
-      return true;
-    }
-    return false;
-  }
-
   @override
   Widget build(BuildContext context) {
+    bool isValid = x.text.isNotEmpty && y.text.isNotEmpty;
     return Column(
       children: [
         ElevatedButton(
@@ -48,6 +42,9 @@ class _ActionOnCoordinatesState extends State<ActionOnCoordinates> {
           keyboardType: TextInputType.number,
           maxLength: 2,
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+          onChanged: (value) {
+            setState(() {});
+          },
         ),
         TextField(
           controller: y,
@@ -55,6 +52,9 @@ class _ActionOnCoordinatesState extends State<ActionOnCoordinates> {
           keyboardType: TextInputType.number,
           maxLength: 2,
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+          onChanged: (value) {
+            setState(() {});
+          },
         ),
       ],
     );

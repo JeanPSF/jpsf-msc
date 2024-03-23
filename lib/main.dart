@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_modular/flutter_modular.dart';
+import 'package:jpsf_msc/modules.dart';
 import 'package:jpsf_msc/router/router.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(ModularApp(module: AppModule(), child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {

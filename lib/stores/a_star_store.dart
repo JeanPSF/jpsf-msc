@@ -1,69 +1,108 @@
-import 'package:flutter/foundation.dart';
 import 'package:jpsf_msc/models/enemy.dart';
 import 'package:jpsf_msc/models/player.dart';
+import 'package:mobx/mobx.dart';
 
-class AStarController with ChangeNotifier {
+part 'a_star_store.g.dart';
+
+class AStarStore extends _AStarStoreBase with _$AStarStore {}
+
+abstract class _AStarStoreBase with Store {
+  @observable
   bool _isPlaying = false;
+  @computed
   bool get isPlaying => _isPlaying;
+  @action
   void setIsPlaying(bool value) {
     _isPlaying = value;
-    notifyListeners();
   }
 
-  final Player _player = Player(name: 'Saguiro', coordinates: (10, 10));
+  @observable
+  Player _player = Player(name: 'Saguiro', coordinates: (10, 10));
+  @computed
   Player get player => _player;
+  @action
+  void _setPlayer(Player value) => _player = value;
 
+  @observable
   int _fieldHeight = 21;
+  @computed
   int get fieldHeight => _fieldHeight;
+  @action
   void setFieldHeight(int value) {
     _fieldHeight = value;
-    notifyListeners();
   }
 
+  @observable
   int _fieldWidth = 21;
+  @computed
   int get fieldWidth => _fieldWidth;
+  @action
   void setFieldWidth(int value) {
     _fieldWidth = value;
-    notifyListeners();
   }
 
   // This allow users to create walls by clicking the tiles
+  @observable
   bool _isWallMode = false;
+  @computed
   bool get isWallMode => _isWallMode;
+  @action
   void setIsWallMode(bool value) {
     _isWallMode = value;
-    notifyListeners();
   }
 
-  final Map<(int, int), bool> _walls = {};
+  @observable
+  Map<(int, int), bool> _walls = {};
+  @computed
   Map<(int, int), bool> get walls => _walls;
+  @action
   void toggleWall((int, int) coords) {
     if (hasPlayer(coords) || hasEnemy(coords)) {
       return;
     }
-    _walls.update(
+    final aux = {..._walls};
+    aux.update(
       coords,
       (value) => !value,
       ifAbsent: () => true,
     );
-    notifyListeners();
+    _walls = aux;
   }
 
-  final Map<String, Enemy> _enemies = {};
+  @observable
+  String? _selectedEnemy;
+  @computed
+  String? get selectedEnemy => _selectedEnemy;
+  @action
+  void setSelectedEnemy(String enemyId) => _selectedEnemy = enemyId;
+
+  @observable
+  Map<String, Enemy> _enemies = {};
+  @computed
   Map<String, Enemy> get enemies => _enemies;
+  @action
   Enemy? spawnEnemyAt((int, int) coords) {
-    if (hasPlayer(coords) || hasWall(coords)) {
+    if (hasPlayer(coords) || hasWall(coords) || hasEnemy(coords)) {
       return null;
     }
-    final aux = Enemy(name: 'Zombie', coordinates: coords);
-    final spawned = _enemies.putIfAbsent(aux.id, () => aux);
-    notifyListeners();
+    final enemyAux = Enemy(
+      name: 'Zombie',
+      coordinates: coords,
+      target: player,
+      walls: walls,
+      boundaries: (_fieldHeight, _fieldWidth),
+    );
+    final aux = {..._enemies};
+    final spawned = aux.putIfAbsent(enemyAux.id, () => enemyAux);
+    _enemies = aux;
     return spawned;
   }
 
+  @action
   void removeEnemyAt(String enemyId) {
-    _enemies.remove(enemyId);
-    notifyListeners();
+    final aux = {..._enemies};
+    aux.remove(enemyId);
+    _enemies = aux;
   }
 
   bool hasPlayer((int, int) coords) {

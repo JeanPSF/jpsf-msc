@@ -5,18 +5,18 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "jpsf-msc",
+            "name": "jpsf_msc",
             "request": "launch",
             "type": "dart"
         },
         {
-            "name": "jpsf-msc (profile mode)",
+            "name": "jpsf_msc (profile mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "profile"
         },
         {
-            "name": "jpsf-msc (release mode)",
+            "name": "jpsf_msc (release mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "release"
