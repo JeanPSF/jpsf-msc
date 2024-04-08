@@ -26,50 +26,50 @@ class Enemy extends Npc {
   // It will return the leaf node (target place), if a path was found
   // a list of visited nodes
   // a list of to visit nodes that weren't visited
-  PathFinderResult get aStar {
-    final start = coordinates;
-    final goal = target.coordinates;
-    debugPrint('Start => $start');
-    debugPrint('Goal => $goal');
-    List<PathFinderNode> toVisit = [PathFinderNode(coordinates: start)];
-    List<PathFinderNode> visited = [];
-    PathFinderNode? result;
-    while (toVisit.first.coordinates != goal) {
-      if (toVisit.isEmpty) {
-        debugPrint('No path found!');
-        break;
+  PathFinderResult? get aStar {
+    try {
+      final start = coordinates;
+      final goal = target.coordinates;
+      List<PathFinderNode> toVisit = [PathFinderNode(coordinates: start)];
+      List<PathFinderNode> visited = [];
+      PathFinderNode? result;
+      while (toVisit.first.coordinates != goal) {
+        if (toVisit.isEmpty) {
+          debugPrint('No path found!');
+          break;
+        }
+        if (toVisit.first.coordinates == goal) {
+          debugPrint('path found!');
+          break;
+        }
+        final current = toVisit.first;
+        final adjacents = _findAdjacents(current);
+        // Prune already visited and in to visit list
+        adjacents.removeWhere(
+          (adjacent) =>
+              visited.any(
+                  (visited) => adjacent.coordinates == visited.coordinates) ||
+              toVisit.any(
+                  (visited) => adjacent.coordinates == visited.coordinates),
+        );
+        toVisit.addAll(adjacents);
+        visited.add(toVisit.first);
+        toVisit.removeAt(0);
+        // if next to visit is the goal, this while won't run, so...
+        // set it as the result
+        if (toVisit.firstOrNull?.coordinates == goal) {
+          result = toVisit.first;
+        }
       }
-      if (toVisit.first.coordinates == goal) {
-        debugPrint('path found!');
-        break;
-      }
-      final current = toVisit.first;
-      final adjacents = _findAdjacents(current);
-      // Prune already visited and in to visit list
-      adjacents.removeWhere(
-        (adjacent) =>
-            visited.any(
-                (visited) => adjacent.coordinates == visited.coordinates) ||
-            toVisit
-                .any((visited) => adjacent.coordinates == visited.coordinates),
+      return PathFinderResult(
+        goalLeaf: result,
+        toVisit: toVisit,
+        visited: visited,
       );
-      toVisit.addAll(adjacents);
-      visited.add(toVisit.first);
-      toVisit.removeAt(0);
-      // if next to visit is the goal, this while won't run, so...
-      // set it as the result
-      if (toVisit.firstOrNull?.coordinates == goal) {
-        result = toVisit.first;
-      }
+    } catch (e) {
+      print('Error calculating path => $e');
     }
-    debugPrint('result => $result');
-    debugPrint('to visit length => ${toVisit.length}');
-    debugPrint('visited length => ${visited.length}');
-    return PathFinderResult(
-      goalLeaf: result,
-      toVisit: toVisit,
-      visited: visited,
-    );
+    return null;
   }
 
   List<PathFinderNode> _findAdjacents(PathFinderNode central) {

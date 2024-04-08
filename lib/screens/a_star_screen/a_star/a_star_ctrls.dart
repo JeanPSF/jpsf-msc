@@ -48,6 +48,14 @@ class AStarCtrls extends StatelessWidget {
           return Expanded(
             child: Column(
               children: [
+                ElevatedButton(
+                  onPressed: () {
+                    final keys = (aStarStore.enemies.keys);
+                    print(
+                        '${aStarStore.enemies[keys.first]?.aStar.toString()}');
+                  },
+                  child: const Text('Test'),
+                ),
                 ...(aStarStore.enemies.keys).map(
                   (key) => CheckboxListTile(
                     title: Text("${aStarStore.enemies[key]?.coordinates}"),

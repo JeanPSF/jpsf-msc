@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:jpsf_msc/models/path_finder_node.dart';
 import 'package:jpsf_msc/stores/a_star_store.dart';
 
 final aStarStore = Modular.get<AStarStore>();
 
-class AStarTile extends StatelessWidget {
+class AStarTile extends StatefulWidget {
   const AStarTile({
     required this.tileCoordinates,
     super.key,
@@ -15,31 +14,66 @@ class AStarTile extends StatelessWidget {
   final (int, int) tileCoordinates;
 
   @override
+  State<AStarTile> createState() => _AStarTileState();
+}
+
+class _AStarTileState extends State<AStarTile>
+    with SingleTickerProviderStateMixin {
+  AnimationController? _animationController;
+  Animation<Color?>? _colorAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 500));
+    _colorAnimation = ColorTween(begin: Colors.white, end: Colors.green)
+        .animate(_animationController!);
+
+    _animationController?.forward();
+  }
+
+  @override
+  void didUpdateWidget(AStarTile oldWidget) {
+    // if (widget.tileState == TileState.visited && _animationController?.isCompleted == false) {
+    //   _animationController?.forward();
+    // }
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Observer(builder: (_) {
       final selectedEnemy = aStarStore.enemies[aStarStore.selectedEnemy];
-      final hasSelectedEnemy = selectedEnemy == null ? false : true;
-      final path = <(int, int)>[];
-      if (hasSelectedEnemy) {
-        PathFinderNode? node = selectedEnemy.aStar.goalLeaf;
-        while (node != null) {
-          path.add(node.coordinates);
-          node = selectedEnemy.aStar.goalLeaf?.parent;
-        }
+      bool isToVisit = false;
+      if (selectedEnemy != null) {
+        isToVisit = selectedEnemy.aStar?.toVisit
+                .where((e) => e.coordinates == widget.tileCoordinates)
+                .isNotEmpty ??
+            false;
       }
-      final color = aStarStore.hasWall(tileCoordinates)
+      bool isVisited = false;
+      if (selectedEnemy != null) {
+        isVisited = selectedEnemy.aStar?.visited
+                .where((e) => e.coordinates == widget.tileCoordinates)
+                .isNotEmpty ??
+            false;
+      }
+      final color = aStarStore.hasWall(widget.tileCoordinates)
           ? Colors.black87
-          : aStarStore.hasEnemy(tileCoordinates)
+          : aStarStore.hasEnemy(widget.tileCoordinates)
               ? Colors.redAccent
-              : aStarStore.hasPlayer(tileCoordinates)
+              : aStarStore.hasPlayer(widget.tileCoordinates)
                   ? Colors.orangeAccent
-                  : path.contains(tileCoordinates)
+                  : isToVisit
                       ? Colors.deepPurple
-                      : const Color.fromRGBO(179, 235, 231, 1);
+                      : isVisited
+                          ? Colors.pink
+                          : const Color.fromRGBO(179, 235, 231, 1);
       return GestureDetector(
         onTap: aStarStore.isWallMode
             ? () {
-                aStarStore.toggleWall(tileCoordinates);
+                aStarStore.toggleWall(widget.tileCoordinates);
               }
             : null,
         child: Container(
