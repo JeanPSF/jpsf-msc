@@ -297,7 +297,7 @@ mixin _$AStarStore on _AStarStoreBase, Store {
   }
 
   @override
-  void setSelectedEnemy(String enemyId) {
+  void setSelectedEnemy(String? enemyId) {
     final _$actionInfo = _$_AStarStoreBaseActionController.startAction(
         name: '_AStarStoreBase.setSelectedEnemy');
     try {

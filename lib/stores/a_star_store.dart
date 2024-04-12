@@ -83,7 +83,7 @@ abstract class _AStarStoreBase with Store {
   @computed
   String? get selectedEnemy => _selectedEnemy;
   @action
-  void setSelectedEnemy(String enemyId) => _selectedEnemy = enemyId;
+  void setSelectedEnemy(String? enemyId) => _selectedEnemy = enemyId;
 
   @observable
   Map<String, Enemy> _enemies = {};

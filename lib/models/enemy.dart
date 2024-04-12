@@ -28,8 +28,8 @@ class Enemy extends Npc {
     List<PathFinderNode> result = <PathFinderNode>[];
     double closest = 9999;
     for (var e in nodes) {
-      final raw = pow((e.coordinates.$1 - goal.$1), 2) +
-          pow((e.coordinates.$2 - goal.$2), 2);
+      final raw = pow((goal.$1 - e.coordinates.$1), 2) +
+          pow((goal.$2 - e.coordinates.$2), 2);
       final dist = sqrt(raw);
 
       if (dist == closest) {
@@ -40,6 +40,8 @@ class Enemy extends Npc {
         result = [e];
       }
     }
+    result.removeWhere((obj) =>
+        walls.containsKey(obj.coordinates) && walls[obj.coordinates] == true);
     return result;
   }
 
@@ -50,8 +52,8 @@ class Enemy extends Npc {
     List<PathFinderNode> result = <PathFinderNode>[];
     int closest = 9999;
     for (var e in nodes) {
-      final dist = (e.coordinates.$1 - goal.$1).abs() +
-          (e.coordinates.$2 - goal.$2).abs();
+      final dist = (goal.$1 - e.coordinates.$1).abs() +
+          (goal.$2 - e.coordinates.$2).abs();
       if (dist == closest) {
         result.add(e);
       }
@@ -106,8 +108,12 @@ class Enemy extends Npc {
 
         // update states
         toVisit.addAll(closeAdjacents);
-        visited.add(toVisit.first);
-        toVisit.removeAt(0);
+        if (toVisit.isNotEmpty) {
+          visited.add(toVisit.first);
+        }
+        if (toVisit.isNotEmpty) {
+          toVisit.removeAt(0);
+        }
         // if next to visit is the goal, this while won't run, so...
         // set it as the result
         if (toVisit.firstOrNull?.coordinates == goal) {

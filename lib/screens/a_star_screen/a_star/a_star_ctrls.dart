@@ -69,6 +69,12 @@ class AStarCtrls extends StatelessWidget {
                   controlAffinity: ListTileControlAffinity.leading,
                 ),
                 const Text('Enemies paths: '),
+                ElevatedButton(
+                  onPressed: () {
+                    aStarStore.setSelectedEnemy(null);
+                  },
+                  child: const Text('Clear'),
+                ),
                 ...(aStarStore.enemies.keys).map(
                   (key) => CheckboxListTile(
                     title: Text(
