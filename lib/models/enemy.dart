@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:jpsf_msc/models/npc.dart';
 import 'package:jpsf_msc/models/path_finder_node.dart';
@@ -11,16 +13,55 @@ class Enemy extends Npc {
     required this.target,
     required this.walls,
     required this.boundaries,
+    required this.heuristic,
   });
 
   final Player target;
   final Map<(int, int), bool> walls;
   final (int x, int y) boundaries;
+  final String heuristic;
 
-  dynamic manhattanDistance(
-    (int, int) x,
-    (int, int) y,
-  ) {}
+  List<PathFinderNode> euclideanDistance(
+    List<PathFinderNode> nodes,
+    (int x, int y) goal,
+  ) {
+    List<PathFinderNode> result = <PathFinderNode>[];
+    double closest = 9999;
+    for (var e in nodes) {
+      final raw = pow((e.coordinates.$1 - goal.$1), 2) +
+          pow((e.coordinates.$2 - goal.$2), 2);
+      final dist = sqrt(raw);
+
+      if (dist == closest) {
+        result.add(e);
+      }
+      if (dist < closest) {
+        closest = dist;
+        result = [e];
+      }
+    }
+    return result;
+  }
+
+  List<PathFinderNode> manhattanDistance(
+    List<PathFinderNode> nodes,
+    (int x, int y) goal,
+  ) {
+    List<PathFinderNode> result = <PathFinderNode>[];
+    int closest = 9999;
+    for (var e in nodes) {
+      final dist = (e.coordinates.$1 - goal.$1).abs() +
+          (e.coordinates.$2 - goal.$2).abs();
+      if (dist == closest) {
+        result.add(e);
+      }
+      if (dist < closest) {
+        closest = dist;
+        result = [e];
+      }
+    }
+    return result;
+  }
 
   // This algorythm is not naive, it prunes already visited paths
   // It will return the leaf node (target place), if a path was found
@@ -52,7 +93,17 @@ class Enemy extends Npc {
               toVisit.any(
                   (visited) => adjacent.coordinates == visited.coordinates),
         );
-        toVisit.addAll(adjacents);
+        // apply euristic
+        List<PathFinderNode> closeAdjacents = adjacents;
+        if (heuristic == 'euclidian') {
+          closeAdjacents = euclideanDistance(adjacents, goal);
+        }
+        if (heuristic == 'manhattan') {
+          closeAdjacents = manhattanDistance(adjacents, goal);
+        }
+
+        // update states
+        toVisit.addAll(closeAdjacents);
         visited.add(toVisit.first);
         toVisit.removeAt(0);
         // if next to visit is the goal, this while won't run, so...

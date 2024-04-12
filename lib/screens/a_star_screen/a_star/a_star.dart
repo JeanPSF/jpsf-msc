@@ -10,14 +10,48 @@ class AStar extends StatefulWidget {
 }
 
 class _AStarState extends State<AStar> {
+  late DateTime _startTime;
+  Duration? _initializationDuration;
+  bool isThirdWidgetRendered = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _startTime = DateTime.now();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final endTime = DateTime.now();
+      setState(() {
+        _initializationDuration = endTime.difference(_startTime);
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return const Column(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        AStarCtrls(),
-        Divider(height: 1),
-        AStarMaze(),
+        Text('${_initializationDuration?.inMilliseconds}'),
+        const AStarCtrls(),
+        const Divider(height: 1),
+        isThirdWidgetRendered
+            ? const Center(child: AStarMaze())
+            : FutureBuilder(
+                future: Future.delayed(Duration.zero),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      setState(() {
+                        isThirdWidgetRendered = true;
+                      });
+                    });
+                    return const Center(
+                      child: Text('Loading...'),
+                    );
+                  }
+                  return Container();
+                },
+              ),
       ],
     );
   }

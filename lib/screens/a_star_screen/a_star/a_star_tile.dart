@@ -29,15 +29,11 @@ class _AStarTileState extends State<AStarTile>
         vsync: this, duration: const Duration(milliseconds: 500));
     _colorAnimation = ColorTween(begin: Colors.white, end: Colors.green)
         .animate(_animationController!);
-
     _animationController?.forward();
   }
 
   @override
   void didUpdateWidget(AStarTile oldWidget) {
-    // if (widget.tileState == TileState.visited && _animationController?.isCompleted == false) {
-    //   _animationController?.forward();
-    // }
     super.didUpdateWidget(oldWidget);
   }
 
@@ -68,7 +64,7 @@ class _AStarTileState extends State<AStarTile>
                   : isToVisit
                       ? Colors.deepPurple
                       : isVisited
-                          ? Colors.pink
+                          ? Colors.blue
                           : const Color.fromRGBO(179, 235, 231, 1);
       return GestureDetector(
         onTap: aStarStore.isWallMode

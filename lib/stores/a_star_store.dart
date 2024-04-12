@@ -17,6 +17,15 @@ abstract class _AStarStoreBase with Store {
   }
 
   @observable
+  String _heuristic = 'euclidean';
+  @computed
+  String get heuristic => _heuristic;
+  @action
+  void setHeuristic(String value) {
+    _heuristic = value;
+  }
+
+  @observable
   Player _player = Player(name: 'Saguiro', coordinates: (10, 10));
   @computed
   Player get player => _player;
@@ -91,6 +100,7 @@ abstract class _AStarStoreBase with Store {
       target: player,
       walls: walls,
       boundaries: (_fieldHeight, _fieldWidth),
+      heuristic: _heuristic,
     );
     final aux = {..._enemies};
     final spawned = aux.putIfAbsent(enemyAux.id, () => enemyAux);

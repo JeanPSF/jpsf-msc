@@ -45,17 +45,30 @@ class AStarCtrls extends StatelessWidget {
           ),
         ),
         Observer(builder: (_) {
+          print(aStarStore.heuristic);
           return Expanded(
             child: Column(
               children: [
-                ElevatedButton(
-                  onPressed: () {
-                    final keys = (aStarStore.enemies.keys);
-                    print(
-                        '${aStarStore.enemies[keys.first]?.aStar.toString()}');
+                const Text('Heuristicas: '),
+                CheckboxListTile(
+                  title: const Text('Euclidean'),
+                  value: aStarStore.heuristic == 'euclidean',
+                  // selected: aStarStore.heuristic == 'euclidean',
+                  onChanged: (newValue) {
+                    aStarStore.setHeuristic('euclidean');
                   },
-                  child: const Text('Test'),
+                  controlAffinity: ListTileControlAffinity.leading,
                 ),
+                CheckboxListTile(
+                  title: const Text('Manhattan'),
+                  value: aStarStore.heuristic == 'manhattan',
+                  // selected: aStarStore.heuristic == 'manhattan',
+                  onChanged: (newValue) {
+                    aStarStore.setHeuristic('manhattan');
+                  },
+                  controlAffinity: ListTileControlAffinity.leading,
+                ),
+                const Text('Enemies paths: '),
                 ...(aStarStore.enemies.keys).map(
                   (key) => CheckboxListTile(
                     title: Text("${aStarStore.enemies[key]?.coordinates}"),
