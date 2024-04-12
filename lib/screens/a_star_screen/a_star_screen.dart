@@ -14,7 +14,7 @@ class _AStarScreenState extends State<AStarScreen> {
   Widget build(BuildContext context) {
     return const AppScaffold(
       title: 'A*',
-      content: AStar(),
+      content: SingleChildScrollView(child: AStar()),
     );
   }
 }

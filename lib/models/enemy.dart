@@ -60,6 +60,8 @@ class Enemy extends Npc {
         result = [e];
       }
     }
+    result.removeWhere((obj) =>
+        walls.containsKey(obj.coordinates) && walls[obj.coordinates] == true);
     return result;
   }
 

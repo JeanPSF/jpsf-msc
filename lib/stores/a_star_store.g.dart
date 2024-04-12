@@ -16,6 +16,13 @@ mixin _$AStarStore on _AStarStoreBase, Store {
       (_$isPlayingComputed ??= Computed<bool>(() => super.isPlaying,
               name: '_AStarStoreBase.isPlaying'))
           .value;
+  Computed<String>? _$heuristicComputed;
+
+  @override
+  String get heuristic =>
+      (_$heuristicComputed ??= Computed<String>(() => super.heuristic,
+              name: '_AStarStoreBase.heuristic'))
+          .value;
   Computed<Player>? _$playerComputed;
 
   @override
@@ -78,6 +85,22 @@ mixin _$AStarStore on _AStarStoreBase, Store {
   set _isPlaying(bool value) {
     _$_isPlayingAtom.reportWrite(value, super._isPlaying, () {
       super._isPlaying = value;
+    });
+  }
+
+  late final _$_heuristicAtom =
+      Atom(name: '_AStarStoreBase._heuristic', context: context);
+
+  @override
+  String get _heuristic {
+    _$_heuristicAtom.reportRead();
+    return super._heuristic;
+  }
+
+  @override
+  set _heuristic(String value) {
+    _$_heuristicAtom.reportWrite(value, super._heuristic, () {
+      super._heuristic = value;
     });
   }
 
@@ -208,6 +231,17 @@ mixin _$AStarStore on _AStarStoreBase, Store {
   }
 
   @override
+  void setHeuristic(String value) {
+    final _$actionInfo = _$_AStarStoreBaseActionController.startAction(
+        name: '_AStarStoreBase.setHeuristic');
+    try {
+      return super.setHeuristic(value);
+    } finally {
+      _$_AStarStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void _setPlayer(Player value) {
     final _$actionInfo = _$_AStarStoreBaseActionController.startAction(
         name: '_AStarStoreBase._setPlayer');
@@ -299,6 +333,7 @@ mixin _$AStarStore on _AStarStoreBase, Store {
   String toString() {
     return '''
 isPlaying: ${isPlaying},
+heuristic: ${heuristic},
 player: ${player},
 fieldHeight: ${fieldHeight},
 fieldWidth: ${fieldWidth},

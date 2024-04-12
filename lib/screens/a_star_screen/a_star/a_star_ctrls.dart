@@ -71,7 +71,8 @@ class AStarCtrls extends StatelessWidget {
                 const Text('Enemies paths: '),
                 ...(aStarStore.enemies.keys).map(
                   (key) => CheckboxListTile(
-                    title: Text("${aStarStore.enemies[key]?.coordinates}"),
+                    title: Text(
+                        "${aStarStore.enemies[key]?.coordinates} (${aStarStore.enemies[key]?.heuristic})"),
                     value: aStarStore.selectedEnemy == key,
                     onChanged: (newValue) {
                       aStarStore.setSelectedEnemy(key);
